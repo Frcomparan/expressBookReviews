@@ -22,16 +22,15 @@ public_users.post('/register', (req, res) => {
   return res.status(200).json({ message: 'User registered' });
 });
 
-// Get the book list available in the shop
-public_users.get('/', function (req, res) {
-  //Write your code here
-
+// // Get the book list available in the shop with async/await
+public_users.get('/', async (req, res) => {
+  // Write your code here
   return res.status(200).json(books);
 });
 
-// Get book details based on ISBN
-public_users.get('/isbn/:isbn', function (req, res) {
-  //Write your code here
+// Get book details based on ISBN async/await
+public_users.get('/isbn/:isbn', async (req, res) => {
+  // Write your code here
   let { isbn } = req.params;
   let book = books[isbn];
 
@@ -42,9 +41,12 @@ public_users.get('/isbn/:isbn', function (req, res) {
   return res.status(200).json(book);
 });
 
-// Get book details based on author
-public_users.get('/author/:author', function (req, res) {
+// Get book details based on author async/await
+public_users.get('/author/:author', async (req, res) => {
+  // Write your code here
   let { author } = req.params;
+
+  author = author.split('-').join(' ');
 
   let booksByAuthor = Object.values(books).filter(
     (book) => book.author.toLowerCase() === author.toLowerCase()
@@ -57,9 +59,12 @@ public_users.get('/author/:author', function (req, res) {
   return res.status(200).json(booksByAuthor);
 });
 
-// Get all books based on title
-public_users.get('/title/:title', function (req, res) {
+// Get all books based on title async/await
+public_users.get('/title/:title', async (req, res) => {
+  // Write your code here
   let { title } = req.params;
+
+  title = title.split('-').join(' ');
 
   let booksByTitle = Object.values(books).filter(
     (book) => book.title.toLowerCase() === title.toLowerCase()
