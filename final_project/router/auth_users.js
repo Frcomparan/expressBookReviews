@@ -64,14 +64,18 @@ regd_users.put('/auth/review/:isbn', (req, res) => {
   }
 
   jwt.verify(
-    accessToken['accessToken '],
+    accessToken['accessToken'],
     'access token secret',
     function (err, user) {
       if (!err) {
-        let book = books.filter((book) => book.isbn === isbn);
+        let book = books[isbn];
 
-        if (book.length > 0) {
-          book[0].reviews.push(review);
+        if (book) {
+          book.reviews = {
+            ...book.reviews,
+            [user.username]: review,
+          };
+
           return res.status(200).json({ message: 'Review added' });
         }
         return res.status(404).json({ message: 'Book not found' });
@@ -84,7 +88,6 @@ regd_users.put('/auth/review/:isbn', (req, res) => {
 regd_users.delete('/auth/review/:isbn', (req, res) => {
   //Write your code here
   let { isbn } = req.params;
-  let { review } = req.body;
 
   let accessToken = req.session.authorization;
 
@@ -97,17 +100,15 @@ regd_users.delete('/auth/review/:isbn', (req, res) => {
     'access token secret',
     function (err, user) {
       if (!err) {
-        let book = books.filter((book) => book.isbn === isbn);
+        let book = books[isbn];
 
-        if (book.length > 0) {
-          let index = book[0].reviews.indexOf(review);
+        // Delete the user review
+        if (book) {
+          delete book.reviews[user.username];
 
-          if (index > -1) {
-            book[0].reviews.splice(index, 1);
-            return res.status(200).json({ message: 'Review deleted' });
-          }
-          return res.status(404).json({ message: 'Review not found' });
+          return res.status(200).json({ message: 'Review deleted' });
         }
+
         return res.status(404).json({ message: 'Book not found' });
       }
       return res.status(403).json({ message: 'User not authenticated' });
